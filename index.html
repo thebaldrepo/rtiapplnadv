@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RTI Application Timeline — Shahzad Ahmad Ganie</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #30363d;
+    --accent: #c9a847;
+    --accent2: #4fa3e0;
+    --red: #e05252;
+    --green: #52c27a;
+    --amber: #e0a952;
+    --text: #e6edf3;
+    --muted: #7d8590;
+    --subtle: #484f58;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Source Sans 3', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(201,168,71,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,71,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* HEADER */
+  header {
+    margin-bottom: 56px;
+    border-left: 3px solid var(--accent);
+    padding-left: 20px;
+  }
+
+  header .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  header p {
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  /* SUBJECT BOX */
+  .subject-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent2);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 48px;
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .subject-box strong {
+    color: var(--text);
+    display: block;
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+    color: var(--accent2);
+  }
+
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 40px;
+    align-items: center;
+  }
+
+  .filter-bar span {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+    margin-right: 4px;
+  }
+
+  .filter-btn {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #0d1117; font-weight: 600; }
+
+  /* TIMELINE */
+  .timeline {
+    position: relative;
+    padding-left: 32px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2), var(--subtle));
+  }
+
+  /* EVENT CARD */
+  .event {
+    position: relative;
+    margin-bottom: 8px;
+    animation: fadeIn 0.4s ease both;
+  }
+
+  .event.hidden { display: none; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Dot on timeline */
+  .event::before {
+    content: '';
+    position: absolute;
+    left: -28px;
+    top: 20px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    background: var(--bg);
+    transition: transform 0.2s;
+    z-index: 2;
+  }
+
+  .event:hover::before { transform: scale(1.4); background: var(--accent); }
+
+  .event-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .event-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(201,168,71,0.15), 0 4px 20px rgba(0,0,0,0.4);
+  }
+
+  .event-card.open {
+    border-color: var(--accent);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+  }
+
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--subtle);
+    min-width: 20px;
+    padding-top: 2px;
+  }
+
+  .card-meta {
+    flex: 1;
+  }
+
+  .card-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+
+  .card-from {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .card-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+
+  .badge-filing    { background: rgba(79,163,224,0.15); color: var(--accent2); border: 1px solid rgba(79,163,224,0.3); }
+  .badge-forward   { background: rgba(201,168,71,0.15); color: var(--accent);  border: 1px solid rgba(201,168,71,0.3); }
+  .badge-replied   { background: rgba(82,194,122,0.15); color: var(--green);   border: 1px solid rgba(82,194,122,0.3); }
+  .badge-notpert   { background: rgba(224,82,82,0.15);  color: var(--red);     border: 1px solid rgba(224,82,82,0.3); }
+  .badge-internal  { background: rgba(224,169,82,0.15); color: var(--amber);   border: 1px solid rgba(224,169,82,0.3); }
+  .badge-origin    { background: rgba(130,80,200,0.15); color: #b48fdf;        border: 1px solid rgba(130,80,200,0.3); }
+
+  /* Expand toggle */
+  .toggle-icon {
+    font-size: 18px;
+    color: var(--subtle);
+    transition: transform 0.2s;
+    padding-top: 2px;
+    user-select: none;
+  }
+
+  .event-card.open .toggle-icon { transform: rotate(180deg); color: var(--accent); }
+
+  /* Detail panel */
+  .card-detail {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 16px 20px 20px;
+    background: var(--surface2);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--muted);
+    animation: slideDown 0.25s ease;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .event-card.open .card-detail { display: block; }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 24px;
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 520px) { .detail-grid { grid-template-columns: 1fr; } }
+
+  .detail-item label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--subtle);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .detail-item span {
+    color: var(--text);
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  .detail-note {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(201,168,71,0.06);
+    border-left: 2px solid var(--accent);
+    border-radius: 4px;
+    font-size: 13px;
+    color: #bbb;
+    font-style: italic;
+  }
+
+  .detail-note.red-note {
+    background: rgba(224,82,82,0.06);
+    border-left-color: var(--red);
+  }
+
+  .detail-note.green-note {
+    background: rgba(82,194,122,0.06);
+    border-left-color: var(--green);
+  }
+
+  /* CONNECTOR between events */
+  .connector {
+    display: flex;
+    align-items: center;
+    margin: 0 0 8px -28px;
+    gap: 6px;
+  }
+
+  .connector-line {
+    width: 20px;
+    height: 1px;
+    background: var(--subtle);
+    opacity: 0.4;
+  }
+
+  .connector-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--subtle);
+    letter-spacing: 1px;
+  }
+
+  /* FOOTER STATS */
+  .stats-bar {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="label">RTI Act, 2005 — Case Dossier</div>
+    <h1>RTI Application Timeline<br>Shri Shahzad Ahmad Ganie</h1>
+    <p>Filed by Adv. Syed Sibtain Razvi &nbsp;·&nbsp; Regarding Communication No. PCCF/NG/DRW/Six-Point/Kamraj/29-30 (05.01.2015)</p>
+  </header>
+
+  <div class="subject-box">
+    <strong>Subject of RTI</strong>
+    Seeking a copy of Communication No. PCCF/NG/DRW/Six-Point/Kamraj/29-30 dated 05.01.2015, issued by the Principal Chief Conservator of Forests, J&K, addressed to the Secretary to Government, Forest Department — whereby cases of <strong style="color:var(--text)">70 Daily Rated Workers of Kamraj Division</strong> were forwarded for regularization under <strong style="color:var(--text)">SRO-64 of 1994</strong>.
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <span>FILTER:</span>
+    <button class="filter-btn active" data-filter="all">All Events</button>
+    <button class="filter-btn" data-filter="filing">Filing</button>
+    <button class="filter-btn" data-filter="forward">Forwarding</button>
+    <button class="filter-btn" data-filter="replied">Replied ✓</button>
+    <button class="filter-btn" data-filter="notpert">Not Pertaining</button>
+    <button class="filter-btn" data-filter="internal">Internal</button>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="timeline" id="timeline">
+
+    <!-- EVENT 0: ORIGIN -->
+    <div class="event" data-type="origin">
+      <div class="event-card" onclick="toggleCard(this)">
+        <div class="card-header">
+          <div class="step-num">00</div>
+          <div class="card-meta">
+            <div class="card-date">05 · 01 · 2015</div>
+            <div class="card-title">Original Communication Sought</div>
+            <div class="card-from">Principal Chief Conservator of Forests, J&K → Secretary, Forest Dept.</div>
+          </div>
+          <span class="card-badge badge-origin">Origin Document</span>
+          <div class="toggle-icon">⌄</div>
+        </div>
+        <div class="card-detail">
+          <div class="detail-grid">
+            <div class="detail-item"><label>Comm. No.</label><span>PCCF/NG/DRW/Six-Point/Kamraj/29-30</span></div>
+            <div class="detail-item"><label>Issued By</label><span>Pr. Chief Conservator of Forests, J&K</span></div>
+            <div class="detail-item"><label>Addressed To</label><span>Secretary to Govt., Forest Department</span></div>
+            <div class="detail-item"><label>Subject</label><span>Regularization of 70 Daily Rated Workers, Kamraj Division under SRO-64 of 1994</span></div>
+          </div>
+          <div class="detail-note">This is the document that the RTI applicant seeks. It was issued a decade before the RTI application, forming the factual basis of Shri Shahzad Ahmad Ganie's regularization claim.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector"><div class="connector-line"></div><div class="connector-label">10 YEARS LATER ↓</div></div>
+
+    <!-- EVENT 1: RTI FILING -->
+    <div class="event" data-type="filing">
+      <div class="event-card" onclick="toggleCard(this)">
+        <div class="card-header">
+          <div class="step-num">01</div>
+          <div class="card-meta">
+            <div class="card-date">16 · 12 · 2025</div>
+            <div class="card-title">RTI Application Filed</div>
+            <div class="card-from">Adv. Syed Sibtain Razvi on behalf of Shri Shahzad Ahmad Ganie</div>
+          </div>
+          <span class="card-badge badge-filing">Application Filed</span>
+          <div class="toggle-icon">⌄</div>
+        </div>
+        <div class="card-detail">
+          <div class="detail-grid">
+            <div class="detail-item"><label>Applicant</label><span>Adv. Syed Sibtain Razvi</span></div>
+            <div class="detail-item"><label>On Behalf Of</label><span>Shri Shahzad Ahmad Ganie</span></div>
+            <div class="detail-item"><label>Address</label><span>2nd Floor, AL-Razak Complex, Tangpora, Near District Court, Srinagar</span></div>
+            <div class="detail-item"><label>Contact</label><span>9596430552 | ssibtain7@gmail.com</span></div>
+            <div class="detail-item"><label>Filed Under</label><span>RTI Act, 2005 / J&K RTI Act, Sec. 6(1)</span></div>
+          </div>
+          <div class="detail-note green-note">The applicant is a Daily Wager employed with Kamraj Division, seeking information to ascertain his regularization status under the communication referred to.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector"><div class="connector-line"></div><div class="connector-label">33 DAYS ↓</div></div>
+
+    <!-- EVENT 2: FIRST FORWARD -->
+    <div class="event" data-type="forward">
+      <div class="event-card" onclick="toggleCard(this)">
+        <div class="card-header">
+          <div class="step-num">02</div>
+          <div class="card-meta">
+            <div class="card-date">18 · 01 · 2026</div>
+            <div class="card-title">Forwarded by Dept. of Forest, Ecology & Environment</div>
+            <div class="card-from">Administrative Department (Forest) → Multiple CPIOs</div>
+          </div>
+          <span class="card-badge badge-forward">Forwarded</span>
+          <div class="toggle-icon">⌄</div>
+        </div>
+        <div class="card-detail">
+          <div class="detail-grid">
+            <div class="detail-item"><label>Letter No.</label><span>FST-RTI/16/2026-02</span></div>
+            <div class="detail-item"><label>From</label><span>Dept. of Forest, Ecology & Environment, Civil Secretariat J&K</span></div>
+            <div class="detail-item"><label>Forwarded To</label><span>CPIO — Forest Dept., Wildlife Dept., Social Forestry, PCCF HoFF, DFO Kamraj, JKFRI, JKPCC, Finance Dept.</span></div>
+            <div class="detail-item"><label>Legal Basis</label><span>RTI Act, 2005 — Sec. 6(3) Transfer</span></div>
+          </div>
+          <div class="detail-note">This is the master forwarding letter referenced by almost every subsequent office. The application received on 16.12.2025 was forwarded to all potentially relevant public authorities simultaneously.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector"><div class="connector-line"></div><div class="connector-label">33 DAYS · PARALLEL RESPONSES BEGIN ↓</div></div>
+
+    <!-- EVENT 3: FINANCE DEPT FORWARD -->
+    <div class="event" data-type="forward">
+      <div class="event-card" onclick="toggleCard(this)">
+        <div class="card-header">
+          <div class="step-num">03</div>
+          <div class="card-meta">
+            <div class="card-date">20 · 02 · 2026</div>
+            <div class="card-title">Finance Department Transfers Application</div>
+            <div class="card-from">Finance Dept. (Civil Secretariat) → CPIO Forest Dept. + Codes Division</div>
+          </div>
+          <span class="card-badge badge-forward">Transferred</span>
+          <div class="toggle-icon">⌄</div>
+        </div>
+        <div class="card-detail">
+          <div class="detail-grid">
+            <div class="detail-item"><label>O.M. No.</label><span>FD-RTI/22/2026-03-FD-(7731665)</span></div>
+            <div class="detail-item"><label>Signed By</label><span>Vinod Kumar Pandit, Under Secretary (on behalf of CPIO)</span></div>
+            <div class="detail-item"><label>Transferred To</label><span>CPIO, Forest Department &amp; CPIO, Codes Division, Finance Dept.</span></div>
+            <div class="detail-item"><label>Legal Basis</label><span>Sec. 6(3), RTI Act, 2005</span></div>
+          </div>
+          <div class="detail-note">Finance Department determined the RTI pertains to Forest Dept. and its own Codes Division, and transferred accordingly with a request to respond directly to the applicant within stipulated time.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EVENT 4: WILDLIFE WARDEN REPLY -->
+    <div class="event" data-type="notpert">
+      <div class="event-card" onclick="toggleCard(this)">
+        <div class="card-header">
+          <div class="step-num">04</div>
+          <div class="card-meta">
+            <div class="card-date">20 · 02 · 2026</div>
+            <div class="card-title">Chief Wildlife Warden Replies: Not Pertaining</div>
+            <div class="card-from">Office of Pr. Chief Conservator of Forests (Wildlife) / CWW, J&K</div>
+          </div>
+          <span class="card-badge badge-notpert">Not Pertaining</span>
+          <div class="toggle-icon">⌄</div>
+        </div>
+        <div class="card-detail">
+          <div class="detail-grid">
+            <div class="detail-item"><label>No.</label><span>CWW-Estb/3/2026-03/219</span></div>
+            <div class="detail-item"><label>Signed By</label><span>Ifshan Dewan, CPIO, O/o CWLW, J&K</span></div>
+            <div class="detail-item"><label>Re. Application Received</label><span>16.12.2025 (received 20.02.2026 via Admin Dept.)</span></div>
+            <div class="detail-item"><label>Reply</label><span>Does not pertain to this department</span></div>
+          </div>
+          <div class="detail-note red-note">Wildlife HQ declined on the grounds that the communication regarding Kamraj Division Daily Rated Workers does not fall within Wildlife Department's jurisdiction.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector"><div class="connector-line"></div><div class="connector-label">3 DAYS ↓</div></div>
+
+    <!-- EVENT 5: SOCIAL FORESTRY REPLY -->
+    <div class="event" data-type="notpert">
+      <div class="event-card" onclick="toggleCard(this)">
+        <div class="card-header">
+          <div class="step-num">05</div>
+          <div class="card-meta">
+            <div class="card-date">23 · 02 · 2026</div>
+            <div class="card-title">Dept. of Social Forestry Replies: Not Pertaining</div>
+            <div class="card-from">Directorate of Social Forestry, J&K</div>
+          </div>
+          <span class="card-badge badge-notpert">Not Pertaining</span>
+          <div class="toggle-icon">⌄</div>
+        </div>
+        <div class="card-detail">
+          <div class="detail-grid">
+            <div class="detail-item"><label>No.</label><span>DIR/DSF/M&E/RTI/375-76</span></div>
+            <div class="detail-item"><label>Signed By</label><span>Dy. Conservator of Forests (M&E), CPIO, Directorate of Social Forestry</span></div>
+            <div class="detail-item"><label>Ref. To</label><span>FST-RTI/16/2026-02 dated 18.01.2026</span></div>
+            <div class="detail-item"><label>Reply</label><span>Does not pertain to this Department</span></div>
+          </div>
+          <div class="detail-note red-note">Social Forestry confirmed the Kamraj Division communication falls outside its departmental records. Appellate Authority noted as Regional Director, Dept. of Social Forestry, Kashmir.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EVENT 6: DFO KAMRAJ REPLY -->
+    <div class="event" data-type="replied">
+      <div class="event-card" onclick="toggleCard(this)">
+        <div class="card-header">
+          <div class="step-num">06</div>
+          <div class="card-meta">
+            <div class="card-date">23 · 02 · 2026</div>
+            <div class="card-title">DFO Kamraj Provides Information</div>
+            <div class="card-from">Office of Divisional Forest Officer, Kamraj Forest Division, Zangli, Kupwara</div>
+          </div>
+          <span class="card-badge badge-replied">Information Provided ✓</span>
+          <div class="toggle-icon">⌄</div>
+        </div>
+        <div class="card-detail">
+          <div class="detail-grid">
+            <div class="detail-item"><label>No.</label><span>DFO/Kmj/411/Legal</span></div>
+            <div class="detail-item"><label>Signed By</label><span>Divisional Forest Officer, Kamraj Forest Division</span></div>
+            <div class="detail-item"><label>Re. Application</label><span>RTI regarding Comm. No. Pccp/NG/DRW/Six-Point/Kamraj/29-30 dated 05.01.2015</span></div>
+            <div class="detail-item"><label>Reply</label><span>Information enclosed herewith</span></div>
+          </div>
+          <div class="detail-note green-note">This is the only office that positively responded with an enclosure of the information sought. DFO Kamraj directly enclosed the requested communication.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector"><div class="connector-line"></div><div class="connector-label">3 DAYS ↓</div></div>
+
+    <!-- EVENT 7: PCCF HOFF INTERNAL -->
+    <div class="event" data-type="internal">
+      <div class="event-card" onclick="toggleCard(this)">
+        <div class="card-header">
+          <div class="step-num">07</div>
+          <div class="card-meta">
+            <div class="card-date">26 · 02 · 2026</div>
+            <div class="card-title">PCCF & HoFF Internally Seeks Information</div>
+            <div class="card-from">O/o Pr. Chief Conservator of Forests & HoFF → Personnel Officer (NG Section)</div>
+          </div>
+          <span class="card-badge badge-internal">Internal Action</span>
+          <div class="toggle-icon">⌄</div>
+        </div>
+        <div class="card-detail">
+          <div class="detail-grid">
+            <div class="detail-item"><label>U.O. No.</label><span>PCCF/RTI/F.N.1248/1624-25</span></div>
+            <div class="detail-item"><label>CPIO</label><span>Ajaz Ahmad (JKAS), CPIO, O/o Pr. Chief Conservator of Forests (HoFF)</span></div>
+            <div class="detail-item"><label>Legal Basis</label><span>RTI Act, 2005 — Sec. 5(4) & 5(5)</span></div>
+            <div class="detail-item"><label>Action</label><span>Personnel Officer (NG) asked to obtain and provide information within stipulated time</span></div>
+          </div>
+          <div class="detail-note">PCCF HoFF received the RTI via FST-RTI/16/2026-02 (dated 18.02.2026) and internally sought the information from the NG Section within its own office before responding to the applicant.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector"><div class="connector-line"></div><div class="connector-label">4 DAYS ↓</div></div>
+
+    <!-- EVENT 8: JKFRI REPLY -->
+    <div class="event" data-type="notpert">
+      <div class="event-card" onclick="toggleCard(this)">
+        <div class="card-header">
+          <div class="step-num">08</div>
+          <div class="card-meta">
+            <div class="card-date">02 · 03 · 2026</div>
+            <div class="card-title">JK Forest Research Institute Replies: Not Pertaining</div>
+            <div class="card-from">Office of the Director, JK Forest Research Institute, Jammu/Srinagar</div>
+          </div>
+          <span class="card-badge badge-notpert">Not Pertaining</span>
+          <div class="toggle-icon">⌄</div>
+        </div>
+        <div class="card-detail">
+          <div class="detail-grid">
+            <div class="detail-item"><label>No.</label><span>JKFRI/Adm/2025-26/2293</span></div>
+            <div class="detail-item"><label>Signed By</label><span>Joint Director, JK Forest Research Institute</span></div>
+            <div class="detail-item"><label>Queries Replied</label><span>Q(a), Q(b), Q(c), Q(d) — all denied</span></div>
+            <div class="detail-item"><label>Reply to All</label><span>Does not pertain to JK Forest Research Institute</span></div>
+          </div>
+          <div class="detail-note red-note">JKFRI replied to all four sub-questions of the RTI application with a uniform denial, clarifying that matters relating to Kamraj Division DRWs do not fall under the research institute's purview.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector"><div class="connector-line"></div><div class="connector-label">9 DAYS ↓</div></div>
+
+    <!-- EVENT 9: JKPCC REPLY -->
+    <div class="event" data-type="notpert">
+      <div class="event-card" onclick="toggleCard(this)">
+        <div class="card-header">
+          <div class="step-num">09</div>
+          <div class="card-meta">
+            <div class="card-date">11 · 03 · 2026</div>
+            <div class="card-title">J&K Pollution Control Committee Replies: NA</div>
+            <div class="card-from">J&K Pollution Control Committee (Parivesh Bhavan, Jammu / Rajbagh, Srinagar)</div>
+          </div>
+          <span class="card-badge badge-notpert">Not Available</span>
+          <div class="toggle-icon">⌄</div>
+        </div>
+        <div class="card-detail">
+          <div class="detail-grid">
+            <div class="detail-item"><label>No.</label><span>PCC/Estb/CO/RTI/2025/E-7859789/490-491</span></div>
+            <div class="detail-item"><label>Signed By</label><span>Zahida Mir, Administrative Officer, CPIO (HQ)</span></div>
+            <div class="detail-item"><label>Ref. Letter</label><span>FST-RTI/16/2026-02 dated 18.01.2026</span></div>
+            <div class="detail-item"><label>Reply to Q1 & Q2</label><span>NA (Not Available)</span></div>
+          </div>
+          <div class="detail-note red-note">JKPCC responded with "NA" to both questions, confirming no relevant records are held. Copy forwarded to Under Secretary, Dept. of Forest, Ecology & Environment.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /timeline -->
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-num">85</div>
+      <div class="stat-label">Days (Filing → Latest Reply)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">8</div>
+      <div class="stat-label">Offices Contacted</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">1</div>
+      <div class="stat-label">Positive Reply (DFO Kamraj)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">5</div>
+      <div class="stat-label">"Not Pertaining" Replies</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">2</div>
+      <div class="stat-label">Transfer / Forward Actions</div>
+    </div>
+  </div>
+
+</div><!-- /wrapper -->
+
+<script>
+  function toggleCard(card) {
+    card.classList.toggle('open');
+  }
+
+  // Filter buttons
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const events = document.querySelectorAll('.event');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+
+      events.forEach(ev => {
+        if (filter === 'all' || ev.dataset.type === filter || ev.dataset.type === 'origin') {
+          ev.classList.remove('hidden');
+        } else {
+          ev.classList.add('hidden');
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>
