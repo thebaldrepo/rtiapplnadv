@@ -7,7 +7,24 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
+  /* LIGHT MODE (default) */
   :root {
+    --bg: #f5f3ee;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #ddd8cc;
+    --accent: #8a6a1f;
+    --accent2: #1e6fa8;
+    --red: #c0392b;
+    --green: #1e7d46;
+    --amber: #a06c10;
+    --text: #1a1612;
+    --muted: #6b6459;
+    --subtle: #aaa49b;
+  }
+
+  /* DARK MODE */
+  :root.dark {
     --bg: #0d1117;
     --surface: #161b22;
     --surface2: #21262d;
@@ -38,8 +55,8 @@
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(201,168,71,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(201,168,71,0.03) 1px, transparent 1px);
+      linear-gradient(rgba(138,106,31,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(138,106,31,0.06) 1px, transparent 1px);
     background-size: 40px 40px;
     pointer-events: none;
     z-index: 0;
@@ -264,14 +281,34 @@
 
   /* Expand toggle */
   .toggle-icon {
-    font-size: 18px;
-    color: var(--subtle);
-    transition: transform 0.2s;
-    padding-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    font-size: 16px;
+    color: var(--text);
+    transition: transform 0.25s, background 0.2s, border-color 0.2s, color 0.2s;
     user-select: none;
+    align-self: center;
   }
 
-  .event-card.open .toggle-icon { transform: rotate(180deg); color: var(--accent); }
+  .event-card:hover .toggle-icon {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .event-card.open .toggle-icon {
+    transform: rotate(180deg);
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
 
   /* Detail panel */
   .card-detail {
@@ -390,9 +427,76 @@
     margin-top: 4px;
   }
 
+
+  /* DARK MODE TOGGLE */
+  .mode-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    user-select: none;
+  }
+
+  .mode-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .mode-toggle .toggle-track {
+    width: 32px;
+    height: 18px;
+    background: var(--border);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
+  }
+
+  .mode-toggle .toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: transform 0.2s, background 0.2s;
+  }
+
+  :root.dark .mode-toggle .toggle-track {
+    background: var(--accent);
+  }
+
+  :root.dark .mode-toggle .toggle-thumb {
+    transform: translateX(14px);
+    background: #0d1117;
+  }
+
+  .mode-toggle .icon { font-size: 14px; }
+
 </style>
 </head>
 <body>
+
+<button class="mode-toggle" id="modeToggle">
+  <span class="icon">☀️</span>
+  <div class="toggle-track"><div class="toggle-thumb"></div></div>
+  <span class="icon">🌙</span>
+</button>
+
 <div class="wrapper">
 
   <header>
@@ -422,7 +526,7 @@
 
     <!-- EVENT 0: ORIGIN -->
     <div class="event" data-type="origin">
-      <div class="event-card" onclick="toggleCard(this)">
+      <div class="event-card" data-toggle="card">
         <div class="card-header">
           <div class="step-num">00</div>
           <div class="card-meta">
@@ -431,7 +535,7 @@
             <div class="card-from">Principal Chief Conservator of Forests, J&K → Secretary, Forest Dept.</div>
           </div>
           <span class="card-badge badge-origin">Origin Document</span>
-          <div class="toggle-icon">⌄</div>
+          <div class="toggle-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2,4 7,10 12,4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="card-detail">
           <div class="detail-grid">
@@ -449,7 +553,7 @@
 
     <!-- EVENT 1: RTI FILING -->
     <div class="event" data-type="filing">
-      <div class="event-card" onclick="toggleCard(this)">
+      <div class="event-card" data-toggle="card">
         <div class="card-header">
           <div class="step-num">01</div>
           <div class="card-meta">
@@ -458,14 +562,14 @@
             <div class="card-from">Adv. Syed Sibtain Razvi on behalf of Shri Shahzad Ahmad Ganie</div>
           </div>
           <span class="card-badge badge-filing">Application Filed</span>
-          <div class="toggle-icon">⌄</div>
+          <div class="toggle-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2,4 7,10 12,4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="card-detail">
           <div class="detail-grid">
             <div class="detail-item"><label>Applicant</label><span>Adv. Syed Sibtain Razvi</span></div>
             <div class="detail-item"><label>On Behalf Of</label><span>Shri Shahzad Ahmad Ganie</span></div>
             <div class="detail-item"><label>Address</label><span>2nd Floor, AL-Razak Complex, Tangpora, Near District Court, Srinagar</span></div>
-            <div class="detail-item"><label>Contact</label><span>9596430552 | ssibtain7@gmail.com</span></div>
+            <div class="detail-item"><label>Contact</label><span>95******52 | ss******n7@gmail.com</span></div>
             <div class="detail-item"><label>Filed Under</label><span>RTI Act, 2005 / J&K RTI Act, Sec. 6(1)</span></div>
           </div>
           <div class="detail-note green-note">The applicant is a Daily Wager employed with Kamraj Division, seeking information to ascertain his regularization status under the communication referred to.</div>
@@ -477,7 +581,7 @@
 
     <!-- EVENT 2: FIRST FORWARD -->
     <div class="event" data-type="forward">
-      <div class="event-card" onclick="toggleCard(this)">
+      <div class="event-card" data-toggle="card">
         <div class="card-header">
           <div class="step-num">02</div>
           <div class="card-meta">
@@ -486,7 +590,7 @@
             <div class="card-from">Administrative Department (Forest) → Multiple CPIOs</div>
           </div>
           <span class="card-badge badge-forward">Forwarded</span>
-          <div class="toggle-icon">⌄</div>
+          <div class="toggle-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2,4 7,10 12,4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="card-detail">
           <div class="detail-grid">
@@ -504,7 +608,7 @@
 
     <!-- EVENT 3: FINANCE DEPT FORWARD -->
     <div class="event" data-type="forward">
-      <div class="event-card" onclick="toggleCard(this)">
+      <div class="event-card" data-toggle="card">
         <div class="card-header">
           <div class="step-num">03</div>
           <div class="card-meta">
@@ -513,7 +617,7 @@
             <div class="card-from">Finance Dept. (Civil Secretariat) → CPIO Forest Dept. + Codes Division</div>
           </div>
           <span class="card-badge badge-forward">Transferred</span>
-          <div class="toggle-icon">⌄</div>
+          <div class="toggle-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2,4 7,10 12,4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="card-detail">
           <div class="detail-grid">
@@ -529,7 +633,7 @@
 
     <!-- EVENT 4: WILDLIFE WARDEN REPLY -->
     <div class="event" data-type="notpert">
-      <div class="event-card" onclick="toggleCard(this)">
+      <div class="event-card" data-toggle="card">
         <div class="card-header">
           <div class="step-num">04</div>
           <div class="card-meta">
@@ -538,7 +642,7 @@
             <div class="card-from">Office of Pr. Chief Conservator of Forests (Wildlife) / CWW, J&K</div>
           </div>
           <span class="card-badge badge-notpert">Not Pertaining</span>
-          <div class="toggle-icon">⌄</div>
+          <div class="toggle-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2,4 7,10 12,4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="card-detail">
           <div class="detail-grid">
@@ -556,7 +660,7 @@
 
     <!-- EVENT 5: SOCIAL FORESTRY REPLY -->
     <div class="event" data-type="notpert">
-      <div class="event-card" onclick="toggleCard(this)">
+      <div class="event-card" data-toggle="card">
         <div class="card-header">
           <div class="step-num">05</div>
           <div class="card-meta">
@@ -565,7 +669,7 @@
             <div class="card-from">Directorate of Social Forestry, J&K</div>
           </div>
           <span class="card-badge badge-notpert">Not Pertaining</span>
-          <div class="toggle-icon">⌄</div>
+          <div class="toggle-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2,4 7,10 12,4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="card-detail">
           <div class="detail-grid">
@@ -581,25 +685,52 @@
 
     <!-- EVENT 6: DFO KAMRAJ REPLY -->
     <div class="event" data-type="replied">
-      <div class="event-card" onclick="toggleCard(this)">
+      <div class="event-card" data-toggle="card">
         <div class="card-header">
           <div class="step-num">06</div>
           <div class="card-meta">
             <div class="card-date">23 · 02 · 2026</div>
-            <div class="card-title">DFO Kamraj Provides Information</div>
+            <div class="card-title">DFO Kamraj Provides Information — Communication PCCF/NG/DRW/Six-Point/Kamraj/29-30</div>
             <div class="card-from">Office of Divisional Forest Officer, Kamraj Forest Division, Zangli, Kupwara</div>
           </div>
           <span class="card-badge badge-replied">Information Provided ✓</span>
-          <div class="toggle-icon">⌄</div>
+          <div class="toggle-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2,4 7,10 12,4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="card-detail">
           <div class="detail-grid">
             <div class="detail-item"><label>No.</label><span>DFO/Kmj/411/Legal</span></div>
             <div class="detail-item"><label>Signed By</label><span>Divisional Forest Officer, Kamraj Forest Division</span></div>
-            <div class="detail-item"><label>Re. Application</label><span>RTI regarding Comm. No. Pccp/NG/DRW/Six-Point/Kamraj/29-30 dated 05.01.2015</span></div>
-            <div class="detail-item"><label>Reply</label><span>Information enclosed herewith</span></div>
+            <div class="detail-item"><label>Communication Enclosed</label><span>PCCF/NG/DRW/Six-Point/Kamraj/29-30 dated 05.01.2015</span></div>
+            <div class="detail-item"><label>Issued By</label><span>A.K. Singh, IFS — Pr. Chief Conservator of Forests, J&K, Jammu</span></div>
+            <div class="detail-item"><label>Addressed To</label><span>Secretary to Government, Forest Department, Civil Secretariat, Jammu</span></div>
+            <div class="detail-item"><label>Total Workers Listed</label><span>71 Daily Rated Workers, Kamraj Forest Division</span></div>
           </div>
-          <div class="detail-note green-note">This is the only office that positively responded with an enclosure of the information sought. DFO Kamraj directly enclosed the requested communication.</div>
+
+          <!-- APPLICANT ENTRY HIGHLIGHT -->
+          <div style="margin-top:16px; background:rgba(201,168,71,0.08); border:1px solid rgba(201,168,71,0.3); border-radius:8px; padding:14px 16px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--accent); margin-bottom:10px;">► SERIAL NO. 70 — APPLICANT'S ENTRY IN THE COMMUNICATION</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 20px; font-size:13px;">
+              <div><span style="color:var(--subtle); font-size:10px; display:block; margin-bottom:2px;">NAME</span><span style="color:var(--text); font-weight:600;">Shazad Ahmad Ganie</span></div>
+              <div><span style="color:var(--subtle); font-size:10px; display:block; margin-bottom:2px;">PARENTAGE</span><span style="color:var(--text);">S/o Wali Mohd Ganie</span></div>
+              <div><span style="color:var(--subtle); font-size:10px; display:block; margin-bottom:2px;">RESIDENCE</span><span style="color:var(--text);">R/o Watergam</span></div>
+              <div><span style="color:var(--subtle); font-size:10px; display:block; margin-bottom:2px;">INITIAL ENGAGEMENT</span><span style="color:var(--text);">10/1993 (Photostat copy enclosed)</span></div>
+              <div><span style="color:var(--subtle); font-size:10px; display:block; margin-bottom:2px;">MUSTER ROLL (ORIGINAL)</span><span style="color:var(--text);">05/1994</span></div>
+            </div>
+            <div style="margin-top:10px; font-size:12px; color:#bbb;">Documents enclosed for S. No. 70: (i) Initial engagement order (ii) Muster Roll in original (iii) CV/TV sheets countersigned by HOD (iv) Continuity certificate (v) Eligibility certificate (vi) Certificate of continuous working (vii) Certificate of payment of wages — all duly countersigned by HOD.</div>
+          </div>
+
+          <!-- HIGH COURT BACKGROUND -->
+          <div style="margin-top:14px; background:rgba(79,163,224,0.07); border:1px solid rgba(79,163,224,0.25); border-radius:8px; padding:14px 16px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--accent2); margin-bottom:10px;">► BACKGROUND — HIGH COURT PROCEEDINGS</div>
+            <div style="font-size:13px; color:#bbb; line-height:1.75;">
+              <div style="margin-bottom:6px;">The unregularized DRWs of Kamraj Forest Division had filed <strong style="color:var(--text)">SWP No. 2205/2011 (CMP No. 3642/2011)</strong> before the Hon'ble High Court Wing, Srinagar.</div>
+              <div style="margin-bottom:6px;">The High Court <strong style="color:var(--text)">disposed of the Writ Petition on 13.12.2012</strong>, directing the respondents to consider regularization cases under <strong style="color:var(--text)">SRO-64 of 1994</strong> within six weeks.</div>
+              <div style="margin-bottom:6px;">For non-compliance, <strong style="color:var(--text)">Contempt Petition No. 103/2013</strong> was filed in SWP No. 2205/2011. The High Court issued notice on <strong style="color:var(--text)">20.03.2013</strong>: <em>"Notice returnable within two weeks. Meanwhile, respondents to comply with court order and report compliance."</em></div>
+              <div>A committee constituted vide CCF(K)/Estt/2003/6111-15 dated <strong style="color:var(--text)">06.01.2003</strong> had established that <strong style="color:var(--text)">221 DRWs</strong> (not 144) should be considered as of the cut-off date 31.03.1994. Out of 83 DRWs, <strong style="color:var(--text)">61 DRWs</strong> who received first wages in 1995–96 and 1996–97 were treated as regular DRWs notionally. The PCCF forwarded all 71 case files on 05.01.2015 with a request to consider regularization under SRO-64 of 1994 <em>"to avoid further litigation in the matter."</em></div>
+            </div>
+          </div>
+
+          <div class="detail-note green-note" style="margin-top:12px;">This is the <strong>only office</strong> that positively responded with the enclosed communication. The document confirms Shazad Ahmad Ganie (S. No. 70) is among the 71 DRWs whose cases were formally forwarded by the PCCF for regularization consideration under SRO-64 of 1994.</div>
         </div>
       </div>
     </div>
@@ -608,7 +739,7 @@
 
     <!-- EVENT 7: PCCF HOFF INTERNAL -->
     <div class="event" data-type="internal">
-      <div class="event-card" onclick="toggleCard(this)">
+      <div class="event-card" data-toggle="card">
         <div class="card-header">
           <div class="step-num">07</div>
           <div class="card-meta">
@@ -617,7 +748,7 @@
             <div class="card-from">O/o Pr. Chief Conservator of Forests & HoFF → Personnel Officer (NG Section)</div>
           </div>
           <span class="card-badge badge-internal">Internal Action</span>
-          <div class="toggle-icon">⌄</div>
+          <div class="toggle-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2,4 7,10 12,4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="card-detail">
           <div class="detail-grid">
@@ -635,7 +766,7 @@
 
     <!-- EVENT 8: JKFRI REPLY -->
     <div class="event" data-type="notpert">
-      <div class="event-card" onclick="toggleCard(this)">
+      <div class="event-card" data-toggle="card">
         <div class="card-header">
           <div class="step-num">08</div>
           <div class="card-meta">
@@ -644,7 +775,7 @@
             <div class="card-from">Office of the Director, JK Forest Research Institute, Jammu/Srinagar</div>
           </div>
           <span class="card-badge badge-notpert">Not Pertaining</span>
-          <div class="toggle-icon">⌄</div>
+          <div class="toggle-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2,4 7,10 12,4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="card-detail">
           <div class="detail-grid">
@@ -662,7 +793,7 @@
 
     <!-- EVENT 9: JKPCC REPLY -->
     <div class="event" data-type="notpert">
-      <div class="event-card" onclick="toggleCard(this)">
+      <div class="event-card" data-toggle="card">
         <div class="card-header">
           <div class="step-num">09</div>
           <div class="card-meta">
@@ -671,7 +802,7 @@
             <div class="card-from">J&K Pollution Control Committee (Parivesh Bhavan, Jammu / Rajbagh, Srinagar)</div>
           </div>
           <span class="card-badge badge-notpert">Not Available</span>
-          <div class="toggle-icon">⌄</div>
+          <div class="toggle-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2,4 7,10 12,4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="card-detail">
           <div class="detail-grid">
@@ -713,30 +844,38 @@
 
 </div><!-- /wrapper -->
 
-<script>
-  function toggleCard(card) {
-    card.classList.toggle('open');
-  }
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  document.addEventListener('DOMContentLoaded', function() {
 
-  // Filter buttons
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const events = document.querySelectorAll('.event');
+    // Dark mode toggle
+    var root = document.documentElement;
+    var toggleBtn = document.getElementById('modeToggle');
+    toggleBtn.addEventListener('click', function() {
+      root.classList.toggle('dark');
+    });
 
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filter = btn.dataset.filter;
 
-      events.forEach(ev => {
-        if (filter === 'all' || ev.dataset.type === filter || ev.dataset.type === 'origin') {
-          ev.classList.remove('hidden');
-        } else {
-          ev.classList.add('hidden');
-        }
+    // Card toggle
+    document.querySelectorAll('[data-toggle="card"]').forEach(function(card) {
+      card.addEventListener('click', function() {
+        this.classList.toggle('open');
       });
     });
-  });
-</script>
-</body>
-</html>
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        var filter = btn.dataset.filter;
+        document.querySelectorAll('.event').forEach(function(ev) {
+          if (filter === 'all' || ev.dataset.type === filter || ev.dataset.type === 'origin') {
+            ev.classList.remove('hidden');
+          } else {
+            ev.classList.add('hidden');
+          }
+        });
+      });
+    });
+
+  });</script>
