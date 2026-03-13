@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RTI Application Timeline — Shahzad Ahmad Ganie</title>
+<title>RTI Application Timeline — Shahzad Ahmad Ganie | v2</title>
 <style>
+
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
   /* LIGHT MODE (default) */
@@ -109,8 +110,8 @@
     border-radius: 8px;
     padding: 16px 20px;
     margin-bottom: 48px;
-    font-size: 13.5px;
-    color: var(--muted);
+    font-size: 15px;
+    color: var(--text);
     line-height: 1.6;
   }
 
@@ -230,7 +231,7 @@
 
   .step-num {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
+    font-size: 13px;
     color: var(--subtle);
     min-width: 20px;
     padding-top: 2px;
@@ -242,7 +243,7 @@
 
   .card-date {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
+    font-size: 13px;
     color: var(--accent);
     letter-spacing: 1px;
     margin-bottom: 4px;
@@ -250,14 +251,14 @@
 
   .card-title {
     font-weight: 600;
-    font-size: 15px;
+    font-size: 18px;
     color: var(--text);
     line-height: 1.3;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
 
   .card-from {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--muted);
   }
 
@@ -265,7 +266,7 @@
     display: inline-block;
     padding: 3px 10px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
     white-space: nowrap;
     align-self: flex-start;
@@ -316,9 +317,9 @@
     border-top: 1px solid var(--border);
     padding: 16px 20px 20px;
     background: var(--surface2);
-    font-size: 13.5px;
+    font-size: 15px;
     line-height: 1.7;
-    color: var(--muted);
+    color: var(--text);
     animation: slideDown 0.25s ease;
   }
 
@@ -341,9 +342,9 @@
   .detail-item label {
     display: block;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 1.5px;
-    color: var(--subtle);
+    color: var(--muted);
     text-transform: uppercase;
     margin-bottom: 3px;
   }
@@ -351,7 +352,7 @@
   .detail-item span {
     color: var(--text);
     font-weight: 500;
-    font-size: 13px;
+    font-size: 15px;
   }
 
   .detail-note {
@@ -360,8 +361,8 @@
     background: rgba(201,168,71,0.06);
     border-left: 2px solid var(--accent);
     border-radius: 4px;
-    font-size: 13px;
-    color: #bbb;
+    font-size: 14.5px;
+    color: #444;
     font-style: italic;
   }
 
@@ -434,6 +435,7 @@
     top: 20px;
     right: 20px;
     z-index: 100;
+    transition: opacity 0.3s ease, transform 0.3s ease;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 50px;
@@ -487,17 +489,368 @@
 
   .mode-toggle .icon { font-size: 14px; }
 
+
+  /* ── FLOATING TOOLTIP ── */
+  #tooltip {
+    position: fixed;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    max-width: 280px;
+  }
+
+  #tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .tooltip-inner {
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+  }
+
+  .tooltip-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+  }
+
+  .tooltip-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .tooltip-rows { display: flex; flex-direction: column; gap: 4px; }
+
+  .tooltip-row {
+    display: flex;
+    gap: 6px;
+    font-size: 11.5px;
+    line-height: 1.4;
+  }
+
+  .tooltip-row .tl { color: var(--muted); min-width: 54px; font-family: 'JetBrains Mono', monospace; font-size: 10px; padding-top: 1px; }
+  .tooltip-row .tv { color: var(--text); }
+
+  .tooltip-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  /* ══════════════════════════════
+     PASSWORD GATE
+  ══════════════════════════════ */
+  #gate {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #f5f3ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  :root.dark #gate { background: #0d1117; }
+  #gate .gate-box {
+    background: #ffffff;
+    border: 1px solid #ddd8cc;
+    border-radius: 16px;
+    padding: 44px 48px;
+    width: 90%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.12);
+  }
+  :root.dark #gate .gate-box {
+    background: #161b22;
+    border-color: #30363d;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+  }
+  #gate .gate-lock { font-size: 40px; }
+  #gate .gate-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1612;
+    text-align: center;
+  }
+  :root.dark #gate .gate-title { color: #e6edf3; }
+  #gate .gate-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #6b6459;
+    text-align: center;
+  }
+  :root.dark #gate .gate-sub { color: #7d8590; }
+  #gate .gate-input-wrap { width: 100%; position: relative; }
+  #gate .gate-input {
+    width: 100%;
+    padding: 13px 44px 13px 16px;
+    border-radius: 8px;
+    border: 1px solid #ddd8cc;
+    background: #f5f3ee;
+    color: #1a1612;
+    font-size: 15px;
+    font-family: 'Source Sans 3', sans-serif;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+  :root.dark #gate .gate-input {
+    background: #21262d;
+    border-color: #30363d;
+    color: #e6edf3;
+  }
+  #gate .gate-input:focus { border-color: #8a6a1f; }
+  :root.dark #gate .gate-input:focus { border-color: #c9a847; }
+  #gate .gate-input.error { border-color: #c0392b; animation: gshake 0.35s ease; }
+  @keyframes gshake {
+    0%,100%{ transform:translateX(0); }
+    25%{ transform:translateX(-7px); }
+    75%{ transform:translateX(7px); }
+  }
+  #gate .gate-eye {
+    position: absolute; right: 13px; top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer; font-size: 17px;
+    color: #6b6459; user-select: none;
+    transition: color 0.2s;
+  }
+  #gate .gate-eye:hover { color: #8a6a1f; }
+  #gate .gate-error {
+    font-size: 12px; color: #c0392b;
+    font-family: 'JetBrains Mono', monospace;
+    display: none; text-align: center;
+  }
+  #gate .gate-btn {
+    width: 100%; padding: 13px;
+    border-radius: 8px; border: none;
+    background: #8a6a1f; color: #fff;
+    font-size: 14px; font-weight: 600;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer; letter-spacing: 0.5px;
+    transition: background 0.2s;
+  }
+  #gate .gate-btn:hover { background: #6e5418; }
+  :root.dark #gate .gate-btn { background: #c9a847; color: #0d1117; }
+  :root.dark #gate .gate-btn:hover { background: #b8973a; }
+
+  /* ══════════════════════════════
+     FLOATING TOOLTIP
+  ══════════════════════════════ */
+  #tooltip {
+    position: fixed; z-index: 1000;
+    pointer-events: none;
+    opacity: 0; transform: translateY(6px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    max-width: 270px;
+  }
+  #tooltip.visible { opacity: 1; transform: translateY(0); }
+  #tooltip .tooltip-inner {
+    background: #ffffff;
+    border: 1px solid #8a6a1f;
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+  }
+  :root.dark #tooltip .tooltip-inner {
+    background: #161b22;
+    border-color: #c9a847;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+  }
+  #tooltip .tooltip-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: #8a6a1f;
+    letter-spacing: 1.5px; margin-bottom: 4px;
+  }
+  :root.dark #tooltip .tooltip-date { color: #c9a847; }
+  #tooltip .tooltip-title {
+    font-size: 13px; font-weight: 700;
+    color: #1a1612; margin-bottom: 7px; line-height: 1.3;
+  }
+  :root.dark #tooltip .tooltip-title { color: #e6edf3; }
+  #tooltip .tooltip-rows { display: flex; flex-direction: column; gap: 4px; }
+  #tooltip .tooltip-row { display: flex; gap: 6px; font-size: 11.5px; line-height: 1.4; }
+  #tooltip .tooltip-row .tl {
+    color: #aaa49b; min-width: 58px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; padding-top: 1px;
+  }
+  :root.dark #tooltip .tooltip-row .tl { color: #484f58; }
+  #tooltip .tooltip-row .tv { color: #1a1612; }
+  :root.dark #tooltip .tooltip-row .tv { color: #e6edf3; }
+  #tooltip .tooltip-badge {
+    display: inline-block; margin-top: 8px;
+    padding: 2px 9px; border-radius: 20px;
+    font-size: 10px; font-weight: 600;
+  }
+
+  /* Hide mode toggle until unlocked */
+  #gate ~ #modeToggle,
+  body:has(#gate:not(.hidden-gate)) #modeToggle { display: none; }
+
+
+
+  /* GATE OVERLAY */
+  #gate {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f3ee;
+  }
+  body.dark-mode #gate { background: #0d1117; }
+
+  .gate-box {
+    background: #fff;
+    border: 1px solid #ddd8cc;
+    border-radius: 16px;
+    padding: 40px 44px;
+    width: 88%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  }
+  body.dark-mode .gate-box {
+    background: #161b22;
+    border-color: #30363d;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  }
+  .gate-lock { font-size: 38px; }
+  .gate-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 21px; font-weight: 700;
+    color: #1a1612; text-align: center;
+  }
+  body.dark-mode .gate-title { color: #e6edf3; }
+  .gate-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: #6b6459; text-align: center;
+  }
+  .gate-input-wrap { width: 100%; position: relative; }
+  .gate-input {
+    width: 100%; padding: 12px 46px 12px 14px;
+    border-radius: 8px; border: 1.5px solid #ddd8cc;
+    background: #f5f3ee; color: #1a1612;
+    font-size: 15px; font-family: 'Source Sans 3', sans-serif;
+    outline: none; box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+  body.dark-mode .gate-input { background: #21262d; border-color: #30363d; color: #e6edf3; }
+  .gate-input:focus { border-color: #8a6a1f; }
+  .gate-eye {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer; font-size: 18px;
+    color: #6b6459; user-select: none;
+  }
+  .gate-error {
+    font-size: 12px; color: #c0392b;
+    font-family: 'JetBrains Mono', monospace;
+    display: none; text-align: center;
+  }
+  .gate-btn {
+    width: 100%; padding: 13px; border-radius: 8px;
+    border: none; background: #8a6a1f; color: #fff;
+    font-size: 15px; font-weight: 600;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .gate-btn:hover { background: #6e5418; }
+  body.dark-mode .gate-btn { background: #c9a847; color: #0d1117; }
+
+  /* TOOLTIP */
+  #tooltip {
+    position: fixed; z-index: 1000; pointer-events: none;
+    opacity: 0; transform: translateY(6px);
+    transition: opacity 0.15s, transform 0.15s;
+    max-width: 270px;
+  }
+  #tooltip.visible { opacity: 1; transform: translateY(0); }
+  .tooltip-inner {
+    background: #fff; border: 1px solid #8a6a1f;
+    border-radius: 10px; padding: 12px 14px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+  }
+  body.dark-mode .tooltip-inner { background: #161b22; border-color: #c9a847; }
+  .tt-date { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #8a6a1f; letter-spacing: 1.5px; margin-bottom: 4px; }
+  body.dark-mode .tt-date { color: #c9a847; }
+  .tt-title { font-size: 13px; font-weight: 700; color: #1a1612; margin-bottom: 7px; line-height: 1.3; }
+  body.dark-mode .tt-title { color: #e6edf3; }
+  .tt-row { display: flex; gap: 6px; font-size: 11.5px; margin-bottom: 3px; }
+  .tt-lbl { color: #aaa49b; min-width: 58px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .tt-val { color: #1a1612; }
+  body.dark-mode .tt-val { color: #e6edf3; }
+
+
+
+  :root.dark [style*="color:#333"] { color: #ccc !important; }
+  :root.dark .detail-note { color: #d0d0d0 !important; }
+
+  :root.dark .card-detail { color: var(--text); }
+
 </style>
 </head>
 <body>
 
-<button class="mode-toggle" id="modeToggle">
-  <span class="icon">☀️</span>
+<!-- PASSWORD GATE -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-lock">&#128274;</div>
+    <div class="gate-title">RTI Case Dossier</div>
+    <div class="gate-sub">PROTECTED — ENTER PASSWORD</div>
+    <div class="gate-input-wrap">
+      <input class="gate-input" id="pwdInput" type="password" placeholder="Password..." autocomplete="off" />
+      <span class="gate-eye" id="eyeBtn">&#128065;</span>
+    </div>
+    <div class="gate-error" id="pwdError">Incorrect password. Try again.</div>
+    <button class="gate-btn" id="unlockBtn">Unlock</button>
+  </div>
+</div>
+
+<!-- TOOLTIP -->
+<div id="tooltip">
+  <div class="tooltip-inner">
+    <div class="tt-date" id="ttDate"></div>
+    <div class="tt-title" id="ttTitle"></div>
+    <div class="tt-row"><span class="tt-lbl">FROM</span><span class="tt-val" id="ttFrom"></span></div>
+    <div class="tt-row"><span class="tt-lbl">OUTCOME</span><span class="tt-val" id="ttOutcome"></span></div>
+  </div>
+</div>
+
+<!-- DARK MODE TOGGLE -->
+<button class="mode-toggle" id="modeToggle" style="display:none">
+  <span class="icon">&#9728;&#65039;</span>
   <div class="toggle-track"><div class="toggle-thumb"></div></div>
-  <span class="icon">🌙</span>
+  <span class="icon">&#127769;</span>
 </button>
 
-<div class="wrapper">
+<!-- MAIN CONTENT -->
+<div id="mainContent" style="display:none">
+<div class="wrapper" id="mainWrapper">
 
   <header>
     <div class="label">RTI Act, 2005 — Case Dossier</div>
@@ -526,7 +879,7 @@
 
     <!-- EVENT 0: ORIGIN -->
     <div class="event" data-type="origin">
-      <div class="event-card" data-toggle="card">
+      <div class="event-card" data-tip-date="05·01·2015" data-tip-title="Original Communication Sought" data-tip-from="PCCF J&K" data-tip-outcome="Sec. Forest Dept." data-tip-badge="Origin Document" data-tip-type="origin" data-toggle="card">
         <div class="card-header">
           <div class="step-num">00</div>
           <div class="card-meta">
@@ -553,7 +906,7 @@
 
     <!-- EVENT 1: RTI FILING -->
     <div class="event" data-type="filing">
-      <div class="event-card" data-toggle="card">
+      <div class="event-card" data-tip-date="16·12·2025" data-tip-title="RTI Application Filed" data-tip-from="Adv. Syed Sibtain Razvi" data-tip-outcome="RTI Act, Sec. 6(1)" data-tip-badge="Application Filed" data-tip-type="filing" data-toggle="card">
         <div class="card-header">
           <div class="step-num">01</div>
           <div class="card-meta">
@@ -569,7 +922,7 @@
             <div class="detail-item"><label>Applicant</label><span>Adv. Syed Sibtain Razvi</span></div>
             <div class="detail-item"><label>On Behalf Of</label><span>Shri Shahzad Ahmad Ganie</span></div>
             <div class="detail-item"><label>Address</label><span>2nd Floor, AL-Razak Complex, Tangpora, Near District Court, Srinagar</span></div>
-            <div class="detail-item"><label>Contact</label><span>95******52 | ss******n7@gmail.com</span></div>
+            <div class="detail-item"><label>Contact</label><span>95******52 | ss******<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="99f7aed9fef4f8f0f5b7faf6f4">[email&#160;protected]</a></span></div>
             <div class="detail-item"><label>Filed Under</label><span>RTI Act, 2005 / J&K RTI Act, Sec. 6(1)</span></div>
           </div>
           <div class="detail-note green-note">The applicant is a Daily Wager employed with Kamraj Division, seeking information to ascertain his regularization status under the communication referred to.</div>
@@ -581,7 +934,7 @@
 
     <!-- EVENT 2: FIRST FORWARD -->
     <div class="event" data-type="forward">
-      <div class="event-card" data-toggle="card">
+      <div class="event-card" data-tip-date="18·01·2026" data-tip-title="Forwarded by Forest, Ecology &amp; Env. Dept." data-tip-from="Admin Dept. (Forest)" data-tip-outcome="Multiple CPIOs" data-tip-badge="Forwarded" data-tip-type="forward" data-toggle="card">
         <div class="card-header">
           <div class="step-num">02</div>
           <div class="card-meta">
@@ -608,7 +961,7 @@
 
     <!-- EVENT 3: FINANCE DEPT FORWARD -->
     <div class="event" data-type="forward">
-      <div class="event-card" data-toggle="card">
+      <div class="event-card" data-tip-date="20·02·2026" data-tip-title="Finance Dept. Transfers Application" data-tip-from="Finance Dept." data-tip-outcome="CPIO Forest + Codes Div." data-tip-badge="Transferred" data-tip-type="forward" data-toggle="card">
         <div class="card-header">
           <div class="step-num">03</div>
           <div class="card-meta">
@@ -633,7 +986,7 @@
 
     <!-- EVENT 4: WILDLIFE WARDEN REPLY -->
     <div class="event" data-type="notpert">
-      <div class="event-card" data-toggle="card">
+      <div class="event-card" data-tip-date="20·02·2026" data-tip-title="Chief Wildlife Warden Replies" data-tip-from="CWW J&amp;K" data-tip-outcome="Does not pertain" data-tip-badge="Not Pertaining" data-tip-type="notpert" data-toggle="card">
         <div class="card-header">
           <div class="step-num">04</div>
           <div class="card-meta">
@@ -660,7 +1013,7 @@
 
     <!-- EVENT 5: SOCIAL FORESTRY REPLY -->
     <div class="event" data-type="notpert">
-      <div class="event-card" data-toggle="card">
+      <div class="event-card" data-tip-date="23·02·2026" data-tip-title="Social Forestry Replies" data-tip-from="Dir. Social Forestry" data-tip-outcome="Does not pertain" data-tip-badge="Not Pertaining" data-tip-type="notpert" data-toggle="card">
         <div class="card-header">
           <div class="step-num">05</div>
           <div class="card-meta">
@@ -685,7 +1038,7 @@
 
     <!-- EVENT 6: DFO KAMRAJ REPLY -->
     <div class="event" data-type="replied">
-      <div class="event-card" data-toggle="card">
+      <div class="event-card" data-tip-date="23·02·2026" data-tip-title="DFO Kamraj Provides Information" data-tip-from="DFO Kamraj Forest Div." data-tip-outcome="Information enclosed ✓" data-tip-badge="Replied ✓" data-tip-type="replied" data-toggle="card">
         <div class="card-header">
           <div class="step-num">06</div>
           <div class="card-meta">
@@ -710,19 +1063,19 @@
           <div style="margin-top:16px; background:rgba(201,168,71,0.08); border:1px solid rgba(201,168,71,0.3); border-radius:8px; padding:14px 16px;">
             <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--accent); margin-bottom:10px;">► SERIAL NO. 70 — APPLICANT'S ENTRY IN THE COMMUNICATION</div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 20px; font-size:13px;">
-              <div><span style="color:var(--subtle); font-size:10px; display:block; margin-bottom:2px;">NAME</span><span style="color:var(--text); font-weight:600;">Shazad Ahmad Ganie</span></div>
-              <div><span style="color:var(--subtle); font-size:10px; display:block; margin-bottom:2px;">PARENTAGE</span><span style="color:var(--text);">S/o Wali Mohd Ganie</span></div>
-              <div><span style="color:var(--subtle); font-size:10px; display:block; margin-bottom:2px;">RESIDENCE</span><span style="color:var(--text);">R/o Watergam</span></div>
-              <div><span style="color:var(--subtle); font-size:10px; display:block; margin-bottom:2px;">INITIAL ENGAGEMENT</span><span style="color:var(--text);">10/1993 (Photostat copy enclosed)</span></div>
-              <div><span style="color:var(--subtle); font-size:10px; display:block; margin-bottom:2px;">MUSTER ROLL (ORIGINAL)</span><span style="color:var(--text);">05/1994</span></div>
+              <div><span style="color:#666; font-size:11px; display:block; margin-bottom:2px;">NAME</span><span style="color:var(--text); font-weight:600;">Shazad Ahmad Ganie</span></div>
+              <div><span style="color:#666; font-size:11px; display:block; margin-bottom:2px;">PARENTAGE</span><span style="color:var(--text);">S/o Wali Mohd Ganie</span></div>
+              <div><span style="color:#666; font-size:11px; display:block; margin-bottom:2px;">RESIDENCE</span><span style="color:var(--text);">R/o Watergam</span></div>
+              <div><span style="color:#666; font-size:11px; display:block; margin-bottom:2px;">INITIAL ENGAGEMENT</span><span style="color:var(--text);">10/1993 (Photostat copy enclosed)</span></div>
+              <div><span style="color:#666; font-size:11px; display:block; margin-bottom:2px;">MUSTER ROLL (ORIGINAL)</span><span style="color:var(--text);">05/1994</span></div>
             </div>
-            <div style="margin-top:10px; font-size:12px; color:#bbb;">Documents enclosed for S. No. 70: (i) Initial engagement order (ii) Muster Roll in original (iii) CV/TV sheets countersigned by HOD (iv) Continuity certificate (v) Eligibility certificate (vi) Certificate of continuous working (vii) Certificate of payment of wages — all duly countersigned by HOD.</div>
+            <div style="margin-top:10px; font-size:12px; color:#333;">Documents enclosed for S. No. 70: (i) Initial engagement order (ii) Muster Roll in original (iii) CV/TV sheets countersigned by HOD (iv) Continuity certificate (v) Eligibility certificate (vi) Certificate of continuous working (vii) Certificate of payment of wages — all duly countersigned by HOD.</div>
           </div>
 
           <!-- HIGH COURT BACKGROUND -->
           <div style="margin-top:14px; background:rgba(79,163,224,0.07); border:1px solid rgba(79,163,224,0.25); border-radius:8px; padding:14px 16px;">
             <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--accent2); margin-bottom:10px;">► BACKGROUND — HIGH COURT PROCEEDINGS</div>
-            <div style="font-size:13px; color:#bbb; line-height:1.75;">
+            <div style="font-size:14px; color:#333; line-height:1.8;">
               <div style="margin-bottom:6px;">The unregularized DRWs of Kamraj Forest Division had filed <strong style="color:var(--text)">SWP No. 2205/2011 (CMP No. 3642/2011)</strong> before the Hon'ble High Court Wing, Srinagar.</div>
               <div style="margin-bottom:6px;">The High Court <strong style="color:var(--text)">disposed of the Writ Petition on 13.12.2012</strong>, directing the respondents to consider regularization cases under <strong style="color:var(--text)">SRO-64 of 1994</strong> within six weeks.</div>
               <div style="margin-bottom:6px;">For non-compliance, <strong style="color:var(--text)">Contempt Petition No. 103/2013</strong> was filed in SWP No. 2205/2011. The High Court issued notice on <strong style="color:var(--text)">20.03.2013</strong>: <em>"Notice returnable within two weeks. Meanwhile, respondents to comply with court order and report compliance."</em></div>
@@ -739,7 +1092,7 @@
 
     <!-- EVENT 7: PCCF HOFF INTERNAL -->
     <div class="event" data-type="internal">
-      <div class="event-card" data-toggle="card">
+      <div class="event-card" data-tip-date="26·02·2026" data-tip-title="PCCF &amp; HoFF Internal Action" data-tip-from="PCCF HoFF → NG Section" data-tip-outcome="Sec. 5(4) &amp; 5(5) RTI" data-tip-badge="Internal Action" data-tip-type="internal" data-toggle="card">
         <div class="card-header">
           <div class="step-num">07</div>
           <div class="card-meta">
@@ -766,7 +1119,7 @@
 
     <!-- EVENT 8: JKFRI REPLY -->
     <div class="event" data-type="notpert">
-      <div class="event-card" data-toggle="card">
+      <div class="event-card" data-tip-date="02·03·2026" data-tip-title="JKFRI Replies" data-tip-from="JK Forest Research Inst." data-tip-outcome="Does not pertain" data-tip-badge="Not Pertaining" data-tip-type="notpert" data-toggle="card">
         <div class="card-header">
           <div class="step-num">08</div>
           <div class="card-meta">
@@ -793,7 +1146,7 @@
 
     <!-- EVENT 9: JKPCC REPLY -->
     <div class="event" data-type="notpert">
-      <div class="event-card" data-toggle="card">
+      <div class="event-card" data-tip-date="11·03·2026" data-tip-title="JKPCC Replies: NA" data-tip-from="J&amp;K Pollution Control Comm." data-tip-outcome="Not Available (NA)" data-tip-badge="Not Available" data-tip-type="notpert" data-toggle="card">
         <div class="card-header">
           <div class="step-num">09</div>
           <div class="card-meta">
@@ -843,39 +1196,144 @@
   </div>
 
 </div><!-- /wrapper -->
+</div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  document.addEventListener('DOMContentLoaded', function() {
+<script>
+(function() {
+  var CORRECT = 'Tehjud.Sir';
 
-    // Dark mode toggle
-    var root = document.documentElement;
-    var toggleBtn = document.getElementById('modeToggle');
-    toggleBtn.addEventListener('click', function() {
-      root.classList.toggle('dark');
+  var gate        = document.getElementById('gate');
+  var pwdInput    = document.getElementById('pwdInput');
+  var unlockBtn   = document.getElementById('unlockBtn');
+  var pwdError    = document.getElementById('pwdError');
+  var eyeBtn      = document.getElementById('eyeBtn');
+  var mainContent = document.getElementById('mainContent');
+  var modeToggle  = document.getElementById('modeToggle');
+
+  var SESSION_KEY = 'rti_john_unlocked';
+
+  function showSite() {
+    gate.style.display        = 'none';
+    mainContent.style.display = 'block';
+    modeToggle.style.display  = 'flex';
+    modeToggle.style.opacity  = '1';
+  }
+
+  // If already unlocked before, skip gate
+  if (localStorage.getItem(SESSION_KEY) === '1') {
+    showSite();
+  }
+
+  function unlock() {
+    var entered = pwdInput.value;
+    if (entered === CORRECT) {
+      localStorage.setItem(SESSION_KEY, '1');
+      showSite();
+    } else {
+      pwdError.style.display = 'block';
+      pwdInput.value = '';
+      pwdInput.focus();
+    }
+  }
+
+  unlockBtn.addEventListener('click', unlock);
+  pwdInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') unlock();
+  });
+
+  eyeBtn.addEventListener('click', function() {
+    if (pwdInput.type === 'password') {
+      pwdInput.type = 'text';
+      eyeBtn.innerHTML = '&#128065;&#8203;';
+    } else {
+      pwdInput.type = 'password';
+      eyeBtn.innerHTML = '&#128065;';
+    }
+  });
+
+  // Dark mode toggle
+  modeToggle.addEventListener('click', function() {
+    document.body.classList.toggle('dark-mode');
+    // also toggle :root.dark for existing CSS vars
+    document.documentElement.classList.toggle('dark');
+  });
+
+  // Hide toggle on scroll
+  var lastScroll = 0;
+  window.addEventListener('scroll', function() {
+    var current = window.scrollY || window.pageYOffset;
+    if (current > 80) {
+      modeToggle.style.opacity = '0';
+      modeToggle.style.pointerEvents = 'none';
+    } else {
+      modeToggle.style.opacity = '1';
+      modeToggle.style.pointerEvents = '';
+    }
+    lastScroll = current;
+  });
+
+  // Card expand/collapse
+  document.addEventListener('click', function(e) {
+    var card = e.target.closest('[data-toggle="card"]');
+    if (card) card.classList.toggle('open');
+  });
+
+  // Filter buttons
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    var filter = btn.dataset.filter;
+    document.querySelectorAll('.event').forEach(function(ev) {
+      if (filter === 'all' || ev.dataset.type === filter || ev.dataset.type === 'origin') {
+        ev.classList.remove('hidden');
+      } else {
+        ev.classList.add('hidden');
+      }
+    });
+  });
+
+  // Tooltip
+  var tooltip   = document.getElementById('tooltip');
+  var ttDate    = document.getElementById('ttDate');
+  var ttTitle   = document.getElementById('ttTitle');
+  var ttFrom    = document.getElementById('ttFrom');
+  var ttOutcome = document.getElementById('ttOutcome');
+
+  var badgeMap = { origin:'badge-origin', filing:'badge-filing', forward:'badge-forward', replied:'badge-replied', notpert:'badge-notpert', internal:'badge-internal' };
+
+  // Tooltip only on non-touch / desktop devices
+  var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  if (!isTouch) {
+    document.addEventListener('mouseover', function(e) {
+      var card = e.target.closest('.event-card[data-tip-title]');
+      if (!card || card.classList.contains('open')) return;
+      ttDate.textContent    = card.dataset.tipDate    || '';
+      ttTitle.textContent   = card.dataset.tipTitle   || '';
+      ttFrom.textContent    = card.dataset.tipFrom    || '';
+      ttOutcome.textContent = card.dataset.tipOutcome || '';
+      tooltip.classList.add('visible');
     });
 
-
-    // Card toggle
-    document.querySelectorAll('[data-toggle="card"]').forEach(function(card) {
-      card.addEventListener('click', function() {
-        this.classList.toggle('open');
-      });
+    document.addEventListener('mousemove', function(e) {
+      if (!tooltip.classList.contains('visible')) return;
+      var x = e.clientX + 18, y = e.clientY - 10;
+      var tw = tooltip.offsetWidth || 270;
+      var th = tooltip.offsetHeight || 100;
+      if (x + tw > window.innerWidth  - 8) x = e.clientX - tw - 18;
+      if (y + th > window.innerHeight - 8) y = e.clientY - th - 10;
+      tooltip.style.left = x + 'px';
+      tooltip.style.top  = y + 'px';
     });
 
-    // Filter buttons
-    document.querySelectorAll('.filter-btn').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        var filter = btn.dataset.filter;
-        document.querySelectorAll('.event').forEach(function(ev) {
-          if (filter === 'all' || ev.dataset.type === filter || ev.dataset.type === 'origin') {
-            ev.classList.remove('hidden');
-          } else {
-            ev.classList.add('hidden');
-          }
-        });
-      });
+    document.addEventListener('mouseout', function(e) {
+      var card = e.target.closest('.event-card[data-tip-title]');
+      if (card) tooltip.classList.remove('visible');
     });
+  }
 
-  });</script>
+})();
+</script>
+</body>
+</html>
