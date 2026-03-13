@@ -812,6 +812,45 @@
 
   :root.dark .card-detail { color: var(--text); }
 
+
+  /* NEW CARD GLOW */
+  .event-card.new-card {
+    box-shadow: 0 0 0 2px var(--accent), 0 0 18px 4px rgba(201,168,71,0.35);
+    border-color: var(--accent);
+  }
+  :root.dark .event-card.new-card {
+    box-shadow: 0 0 0 2px #c9a847, 0 0 22px 6px rgba(201,168,71,0.25);
+  }
+
+  /* NEW pill label */
+  .new-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #0d1117;
+    background: var(--accent);
+    border: none;
+    animation: newPulse 2s ease-in-out infinite;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+
+  @keyframes newPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,71,0.5); }
+    50%       { box-shadow: 0 0 0 5px rgba(201,168,71,0); }
+  }
+
+  :root.dark .new-pill {
+    color: #0d1117;
+    background: #c9a847;
+  }
+
 </style>
 </head>
 <body>
